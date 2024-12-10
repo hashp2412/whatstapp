@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 export async function POST(request){
     const {app,sender,message,group_name,phone} = await request.json()
-    console.log(app)
-    console.log(sender)
-    console.log(message)
-    console.log(group_name)
-    console.log(phone)
+    app && console.log(app)
+    sender && console.log(sender)
+    message && console.log(message)
+    group_name && console.log(group_name)
+    phone && console.log(phone)
     return NextResponse.json({ reply: 'User inserted successfully' });
 }
