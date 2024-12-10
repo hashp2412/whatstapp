@@ -25,5 +25,5 @@ export async function POST(request) {
     // phone && console.log(phone);
     console.log(body)
 
-    return null
+    return NextResponse.json({ xyz: "User inserted successfully" });
 }
