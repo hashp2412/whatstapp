@@ -7,5 +7,5 @@ export async function POST(request){
     console.log(message)
     console.log(group_name)
     console.log(phone)
-    return NextResponse
+    return NextResponse.json({ reply: 'User inserted successfully' });
 }
