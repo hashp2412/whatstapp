@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { parse, stringify } from 'csv/sync';
+import { parse } from 'csv-parse';  // Corrected import for csv-parse
+import { stringify } from 'csv-stringify'
 import { NextResponse } from 'next/server';
 
 // Path to the Excel file (CSV format)
