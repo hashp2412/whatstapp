@@ -3,6 +3,7 @@ import path from 'path';
 import { parse } from 'csv-parse';  // Corrected import for csv-parse
 import { stringify } from 'csv-stringify'
 import { NextResponse } from 'next/server';
+import { time } from 'console';
 
 // Path to the Excel file (CSV format)
 
@@ -30,30 +31,17 @@ const filePath = path.resolve('public', 'data.csv');
     }
 
     // Read existing data from the file
-    let data = [];
-    if (fs.existsSync(filePath)) {
-      const fileContent = fs.readFileSync(filePath, 'utf-8');
-      data = parse(fileContent, { columns: true });
-    }
+   
+    const today = new Date();
 
-    // Check if the entry already exists
-    const exists = data.some(
-      (entry) =>
-        entry.app === app &&
-        entry.sender === sender &&
-        entry.phone === phone &&
-        entry.message === message
-    );
-
-    if (exists) {
-      return NextResponse.json(
-        { reply: 'Data already exists' },
-        { status: 409 }
-      );
-    }
-
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = today.getFullYear();
+    
+    const todayDate = `${day}/${month}/${year}`
+    const requestType = "new request"
     // Add new entry to the data
-    data.push({ app, sender, phone, message });
+    data.push({ app, sender, phone, message,todayDate,requestType});
 
     // Write updated data back to the file
     const csvContent = stringify(data, { header: true });
