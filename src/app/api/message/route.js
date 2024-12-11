@@ -13,5 +13,5 @@ export async function POST(request) {
         console.log(params);
 
 
-    return NextResponse.json({ xyz: "User inserted successfully" });
+    return NextResponse.json({ reply: "User inserted successfully" });
 }
