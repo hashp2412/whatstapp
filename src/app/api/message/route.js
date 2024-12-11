@@ -1,15 +1,29 @@
 import fs from 'fs';
 import path from 'path';
-import { parse } from 'csv-parse';  // Corrected import for csv-parse
-import { stringify } from 'csv-stringify'
+import { parse } from 'csv-parse'; // Corrected import for csv-parse
+import { stringify } from 'csv-stringify';
 import { NextResponse } from 'next/server';
-import { time } from 'console';
 
 // Path to the Excel file (CSV format)
-
-export async function POST(request) {
 const filePath = path.resolve('public', 'data.csv');
 
+const parseCSV = (content) =>
+  new Promise((resolve, reject) => {
+    parse(content, { columns: true }, (err, records) => {
+      if (err) reject(err);
+      else resolve(records);
+    });
+  });
+
+const stringifyCSV = (data) =>
+  new Promise((resolve, reject) => {
+    stringify(data, { header: true }, (err, output) => {
+      if (err) reject(err);
+      else resolve(output);
+    });
+  });
+
+export async function POST(request) {
   try {
     const query = await request.text();
     const params = {};
@@ -31,24 +45,28 @@ const filePath = path.resolve('public', 'data.csv');
     }
 
     // Read existing data from the file
-   
-    const today = new Date();
+    const fileContent = fs.existsSync(filePath)
+      ? fs.readFileSync(filePath, 'utf-8')
+      : '';
+    const data = fileContent.trim() ? await parseCSV(fileContent) : [];
 
+    // Prepare data
+    const today = new Date();
     const day = String(today.getDate()).padStart(2, '0');
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const year = today.getFullYear();
-    
-    const todayDate = `${day}/${month}/${year}`
-    const requestType = "new request"
-    // Add new entry to the data
-    data.push({ app, sender, phone, message,todayDate,requestType});
+    const todayDate = `${day}/${month}/${year}`;
+    const requestType = 'new request';
+
+    // Add new entry
+    data.push({ app, sender, phone, message, todayDate, requestType });
 
     // Write updated data back to the file
-    const csvContent = stringify(data, { header: true });
+    const csvContent = await stringifyCSV(data);
     fs.writeFileSync(filePath, csvContent, 'utf-8');
 
     return NextResponse.json(
-      { reply: 'Data added successfully'},
+      { reply: 'Data added successfully' },
       { status: 201 }
     );
   } catch (error) {
@@ -58,9 +76,6 @@ const filePath = path.resolve('public', 'data.csv');
     );
   }
 }
-
-
-
 
 
 export async function GET(request) {
